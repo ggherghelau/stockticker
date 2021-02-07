@@ -117,7 +117,57 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"js/fetch/get-requests.js":[function(require,module,exports) {
+})({"js/models/stocks.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setStocks = setStocks;
+exports.getStocks = getStocks;
+exports.updateStocks = updateStocks;
+var storeStocks = [];
+var once; //no value - undefined
+
+function setStocks(data) {
+  if (once === undefined) {
+    for (var i in data) {
+      storeStocks.push(data[i]);
+    }
+
+    once = true;
+  }
+}
+
+function updateStocks(data) {
+  once = undefined;
+  setStocks(data);
+} //using map, filter, reduce - not to mutate the origional data
+
+
+function getStocks() {
+  return storeStocks;
+}
+},{}],"js/controllers/stock-controller.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getRandomStock = getRandomStock;
+
+var _stocks = require("../models/stocks.js");
+
+function getRandomStock() {
+  var data = (0, _stocks.getStocks)();
+  var stockMarkup = data.map(function (stock) {
+    var view = "\n                    <aside class=\"cat-view\">\n                    ".concat(Object.keys(stock)[0], " =\n                    ").concat(Object.values(stock)[0], "\n                    </aside>\n                    ");
+    var elem = document.createRange().createContextualFragment(view).children[0];
+    return elem;
+  });
+  return stockMarkup;
+}
+},{"../models/stocks.js":"js/models/stocks.js"}],"js/fetch/get-requests.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -153,50 +203,10 @@ function getStocksRequest(url) {
   console.log(result);
   return result;
 }
-},{}],"js/models/stocks.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.setStocks = setStocks;
-exports.getStocks = getStocks;
-exports.updateStocks = updateStocks;
-
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-// storing the cat data 
-var stockStorage = [];
-var once; //no value - undefined
-
-function setStocks(data) {
-  if (once === undefined) {
-    stockStorage = _toConsumableArray(data);
-    once = true;
-  }
-}
-
-function updateStocks(data) {
-  once = undefined;
-  setStocks(data);
-} //using map, filter, reduce - not to mutate the origional data
-
-
-function getStocks() {
-  return stockStorage;
-}
 },{}],"js/index.js":[function(require,module,exports) {
 "use strict";
+
+var _stockController = require("./controllers/stock-controller.js");
 
 var _getRequests = require("./fetch/get-requests.js");
 
@@ -206,10 +216,17 @@ window.addEventListener('load', function (e) {
   var request = (0, _getRequests.getStocksRequest)("https://www.alphavantage.co/query?");
   request.then(function (data) {
     //save data to imported file
-    (0, _stocks.setStocks)(data);
+    var val = Object.values(data);
+    var info = val[1];
+    (0, _stocks.setStocks)(info);
+    (0, _stockController.getRandomStock)().forEach(function (item) {
+      return document.querySelector('.cat-display').append(item);
+    });
   });
+  var result = (0, _stocks.getStocks)();
+  console.log(result);
 });
-},{"./fetch/get-requests.js":"js/fetch/get-requests.js","./models/stocks.js":"js/models/stocks.js"}],"../node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./controllers/stock-controller.js":"js/controllers/stock-controller.js","./fetch/get-requests.js":"js/fetch/get-requests.js","./models/stocks.js":"js/models/stocks.js"}],"../node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -237,7 +254,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54268" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63535" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
