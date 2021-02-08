@@ -1,27 +1,31 @@
 
-let storeStocks = []
-let once; //no value - undefined
+let stockValues = [];
+let stockDates = [];
+// let once; //no value - undefined
 
-function setStocks(data){
-    if(once === undefined){
-        for (var i in data){
-            storeStocks.push(data[i])
-          }
-        once = true;
+function setStockValues(values){
+    stockValues = [];
+    for (var i in values){
+        stockValues.push(values[i])
     }
 }
-
-function updateStocks(data){
-    once = undefined;
-    setStocks(data);
+function setStockDates(dates){
+    stockDates = [];
+    stockDates = dates;
 }
 
-//using map, filter, reduce - not to mutate the origional data
-function getStocks(){
-    return storeStocks;
+function getStockValues(){
+    return stockValues;
 }
 
-export {setStocks, getStocks, updateStocks};
+function getStockDates(){
+    return stockDates[0];
+}
+
+
+
+
+export {setStockValues, getStockValues, setStockDates, getStockDates};
 
  
 

@@ -123,30 +123,32 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.setStocks = setStocks;
-exports.getStocks = getStocks;
-exports.updateStocks = updateStocks;
-var storeStocks = [];
-var once; //no value - undefined
+exports.setStockValues = setStockValues;
+exports.getStockValues = getStockValues;
+exports.setStockDates = setStockDates;
+exports.getStockDates = getStockDates;
+var stockValues = [];
+var stockDates = []; // let once; //no value - undefined
 
-function setStocks(data) {
-  if (once === undefined) {
-    for (var i in data) {
-      storeStocks.push(data[i]);
-    }
+function setStockValues(values) {
+  stockValues = [];
 
-    once = true;
+  for (var i in values) {
+    stockValues.push(values[i]);
   }
 }
 
-function updateStocks(data) {
-  once = undefined;
-  setStocks(data);
-} //using map, filter, reduce - not to mutate the origional data
+function setStockDates(dates) {
+  stockDates = [];
+  stockDates = dates;
+}
 
+function getStockValues() {
+  return stockValues;
+}
 
-function getStocks() {
-  return storeStocks;
+function getStockDates() {
+  return stockDates[0];
 }
 },{}],"js/controllers/stock-controller.js":[function(require,module,exports) {
 "use strict";
@@ -154,17 +156,29 @@ function getStocks() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getRandomStock = getRandomStock;
+exports.getStockVal = getStockVal;
+exports.getStockDate = getStockDate;
 
 var _stocks = require("../models/stocks.js");
 
-function getRandomStock() {
-  var data = (0, _stocks.getStocks)();
-  var stockMarkup = data.map(function (stock) {
-    var view = "\n                    <aside class=\"cat-view\">\n                    ".concat(Object.keys(stock)[0], " =\n                    ").concat(Object.values(stock)[0], "\n                    </aside>\n                    ");
+function getStockDate() {
+  var dates = (0, _stocks.getStockDates)();
+  var stockDateMarkup = dates.slice(0, 10).map(function (date) {
+    var view = "\n                    <aside class=\"stoc-values\">\n                        <h3>Date: ".concat(date, "</h3>                   \n                    </aside>\n                    ");
     var elem = document.createRange().createContextualFragment(view).children[0];
     return elem;
   });
+  return stockDateMarkup;
+}
+
+function getStockVal() {
+  var data = (0, _stocks.getStockValues)();
+  var stockMarkup = data.slice(0, 10).map(function (stock) {
+    var view = "\n                    <aside class=\"stoc-values\">\n                        <p>open: ".concat(Object.values(stock)[0], "</p>\n                        <p>high: ").concat(Object.values(stock)[1], "</p>\n                        <p>low: ").concat(Object.values(stock)[2], "</p>\n                        <p>close: ").concat(Object.values(stock)[3], "</p>                    \n                    </aside>\n                    ");
+    var elem = document.createRange().createContextualFragment(view).children[0];
+    return elem;
+  }); // console.log(stockMarkup)
+
   return stockMarkup;
 }
 },{"../models/stocks.js":"js/models/stocks.js"}],"js/fetch/get-requests.js":[function(require,module,exports) {
@@ -182,25 +196,21 @@ exports.getStocksRequest = getStocksRequest;
 @params: url: api param url string
 @description: send through a request to retrieve the required data from the api object 
 */
-function getStocksRequest(url) {
-  //create custom query param to pass with URL
-  //also add api key
-  var queryParams = new URLSearchParams(url.search);
-  queryParams.set('function', 'TIME_SERIES_DAILY'); //query param
+function getStocksRequest(url, func, symbol) {
+  var params = new URLSearchParams(url.search);
+  params.set('function', func); //query param
 
-  queryParams.set('symbol', 'IBM');
-  queryParams.set('apikey', 'IDSM9WY7P551RX1V'); // api key
+  params.set('symbol', symbol);
+  params.set('apikey', 'IDSM9WY7P551RX1V'); // api key
 
-  queryParams.toString;
-  console.log(url + queryParams);
-  var result = fetch(url + queryParams).then(function (response) {
+  params.toString;
+  var result = fetch(url + params).then(function (response) {
     return response.json();
   }) //get response from API
   .then(function (data) {
     return data;
   }); // get data from response from API
 
-  console.log(result);
   return result;
 }
 },{}],"js/index.js":[function(require,module,exports) {
@@ -212,19 +222,31 @@ var _getRequests = require("./fetch/get-requests.js");
 
 var _stocks = require("./models/stocks.js");
 
-window.addEventListener('load', function (e) {
-  var request = (0, _getRequests.getStocksRequest)("https://www.alphavantage.co/query?");
+document.querySelector('.search-api').addEventListener('submit', function (e) {
+  e.preventDefault();
+  document.querySelector('.results').innerHTML = "";
+  var func = e.target.elements.series.value;
+  var symbol = e.target.elements.searchSymbol.value;
+  var request = (0, _getRequests.getStocksRequest)("https://www.alphavantage.co/query?", func, symbol);
+  var dates = [];
   request.then(function (data) {
     //save data to imported file
     var val = Object.values(data);
     var info = val[1];
-    (0, _stocks.setStocks)(info);
-    (0, _stockController.getRandomStock)().forEach(function (item) {
-      return document.querySelector('.cat-display').append(item);
+    (0, _stocks.setStockValues)(info);
+    dates.push(Object.keys(info));
+    (0, _stocks.setStockDates)(dates); // const count = getStockDate.length;
+    // const x = getStockDate();
+    // const y = getStockVal();
+    // for (let i = 0; i<count; i++){
+    //   document.querySelector('.results').append(x[i]);
+    //   document.querySelector('.results').append(y[i]);
+    // }
+
+    (0, _stockController.getStockVal)().forEach(function (item) {
+      return document.querySelector('.results').append(item);
     });
   });
-  var result = (0, _stocks.getStocks)();
-  console.log(result);
 });
 },{"./controllers/stock-controller.js":"js/controllers/stock-controller.js","./fetch/get-requests.js":"js/fetch/get-requests.js","./models/stocks.js":"js/models/stocks.js"}],"../node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -254,7 +276,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63535" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58258" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

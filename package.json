@@ -1,7 +1,7 @@
 {
-  "name": "module-build",
+  "name": "stock-ticker",
   "version": "1.0.0",
-  "description": "Setting Up project and creating continuous integratio and continuous deployment using github and netlify.",
+  "description": "Getting stock info from API and display to user.",
   "main": "index.js",
   "scripts": {
     "test": "concurrently \"mkdir -p src src/js src/css src/scss src/assets\" \"touch src/index.html src/js/index.js src/scss/styles.scss\"",

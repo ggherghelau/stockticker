@@ -1,24 +1,34 @@
-import { getRandomStock } from './controllers/stock-controller.js';
+import { getStockVal, getStockDate } from './controllers/stock-controller.js';
 import {getStocksRequest} from './fetch/get-requests.js';
-import {setStocks, getStocks, updateStocks} from './models/stocks.js';
+import {setStockDates, setStockValues} from './models/stocks.js';
 
- window.addEventListener('load',(e) =>{
-   const request = getStocksRequest("https://www.alphavantage.co/query?");
-    
+
+ document.querySelector('.search-api').addEventListener('submit',(e) =>{
+   e.preventDefault();
+   document.querySelector('.results').innerHTML = "";
+   const func = e.target.elements.series.value;
+   const symbol = e.target.elements.searchSymbol.value;
+   const request = getStocksRequest("https://www.alphavantage.co/query?", func, symbol);
+   let dates = [];
    request.then(data =>{
       //save data to imported file
       const val = Object.values(data)
       const info = val[1]
-      setStocks(info);
+      setStockValues(info);
 
-      getRandomStock().forEach(item => 
-        document.querySelector('.cat-display').append(item));
+      dates.push(Object.keys(info))
+      setStockDates(dates);
 
-   })
+      // const count = getStockDate.length;
+      // const x = getStockDate();
+      // const y = getStockVal();
+      // for (let i = 0; i<count; i++){
+      //   document.querySelector('.results').append(x[i]);
+      //   document.querySelector('.results').append(y[i]);
+      // }
 
-   const result = getStocks();
-   console.log(result)
-
+      getStockVal().forEach(item => 
+        document.querySelector('.results').append(item));
+   }) 
    
-    
  })

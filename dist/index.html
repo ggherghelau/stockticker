@@ -1,31 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employees</title>
+    <title>Stock Ticker API</title>
     <link rel="stylesheet" href="/styles.b61e60ae.css">
-<script src="/styles.b61e60ae.js"></script></head>
-<body>
-    <!-- https://squoosh.app squeeze the hell out of images -->
-    <header class="app-header">
-        <div class="header-content">
-            <h1 class="title">REST API </h1>
-            <p class="tagline">access and display content</p>
+  <script src="/styles.b61e60ae.js"></script></head>
+  <body class="container">
  
-            <img src="/banner.16c62757.webp" alt="frustrated employee">
-            <button id="makeRequest">Get Data</button>
-
-        </div>
+    <header class="app-header">
+      <div class="header-content">
+        <h1 class="title">Stock Ticker API</h1>
+        <p class="tagline">enter a stock symbol to get info</p>
+      </div>
     </header>
+
     <main>
-        <aside class="cat-display">
-            
-        </aside>
-    </main>
+      <form id="search" class="search-api">
+          <ul class="series-list">
+            <li class="series subheading"><h3>Time Series</h3></li>
+          <li class="series">
+            <label for="daily">Daily</label><input id="daily" type="radio" name="series" value="TIME_SERIES_DAILY" checked="">
+          </li>
+          <li class="series">
+            <label for="daily-adjusted">Daily Adjusted</label><input id="daily-adjusted" type="radio" name="series" value="TIME_SERIES_DAILY_ADJUSTED">
+          </li>
+          <li class="series">
+            <label for="weekply">Weekply</label>
+            <input id="weekply" type="radio" name="series" value="TIME_SERIES_WEEKLY">
+          </li>
+          <li class="series">
+            <label for="weekly-adjusted">Weekly Adjusted</label><input id="weekly-adjusted" type="radio" name="series" value="TIME_SERIES_WEEKLY_ADJUSTED">
+          </li>
+          <li class="series">
+            <label for="monthly">Monthly</label><input id="monthly" type="radio" name="series" value="TIME_SERIES_MONTHLY">
+          </li>
+          <li class="series">
+            <label for="monthly-adjusted">Monthly Adjusted</label><input id="monthly-adjusted" type="radio" name="series" value="TIME_SERIES_MONTHLY_ADJUSTED">
+          </li>
+          <li class="series search-term">
+                <div class="control">  <label for="searchSymbol">symbol</label>
+                    <input id="searchSymbol" type="text" name="searchSymbol" placeholder="ex: IBM" required="">
+                </div>
+               
+                <button type="submit">search</button>
+              
+              
+          </li>
+         
+        </ul>
        
-     <script src="/js.00a46daa.js" type="module"></script>    
-</body>
+      </form>
+     
+     <!-- CONTAINER FOR SEARCH RESULTS -->
+      <aside id="results" class="results">
+        
+      </aside>
+                
+ 
+    </main>
+
+    <script src="/js.00a46daa.js"></script>
+  </body>
 </html>
 
  
