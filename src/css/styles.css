@@ -165,7 +165,8 @@ body {
   padding: 1rem;
 }
 
-.stoc-values {
+.stoc-values,
+.search-api div{
   -webkit-box-shadow: 0 0 2px 0 grey;
           box-shadow: 0 0 2px 0 grey;
   background: #f4f9fd;
@@ -174,6 +175,26 @@ body {
   text-align: center;
   max-width: 400px;
 }
+
+.search-api div,
+.search-api div.control{
+    text-align: left;
+    font-size: 1.5rem;
+    padding-left: 30px;
+}
+
+div.control input{
+    font-size: 1.8rem;
+    max-width: 70%;
+}
+
+.search-api h3{
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+    color: #8083e5;
+}
+
 
 
 
